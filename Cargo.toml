@@ -6,6 +6,7 @@ edition = "2018"
 repository = "https://github.com/nohupped/structype_derive"
 license = "MIT"
 keywords = ["macro", "derive", "procmacro", "attribute", "types"]
+description = "A derive macro crate that lets you view an allowed type's fields and will let you over-ride it."
 
 [lib]
 proc-macro = true
