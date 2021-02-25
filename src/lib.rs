@@ -1,8 +1,10 @@
-//! This is a procedural derive macro that will let you annotate over structs enums and unions.
-//! This derive will add two impl on the type.`print_fields()` will print the type field names
-//! to the STDOUT, while `as_string()` returns a json serialized string representation of the
-//! type. This macro is not applicable on tuple structs and unit structs, so it will panic if these
-//! types are annotated with this.
+//! This is a derive procedural macro that will let you add custom derive
+//! and attributes over structs and enums. This derive will add two impl on the
+//! type. `as_string()` returns a json serialized string key-value representation
+//! where key is the type's field name and value is the attribute set in the
+//! `structype_label`, while`print_fields()` function will print the same to STDOUT.
+//! This macro cannot be applied over tuple structs and unit structs, so it will panic if these
+//! types are annotated with this derive and won't let you compile.
 //!
 //! # Example:
 //! ```
