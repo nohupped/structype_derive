@@ -2,7 +2,7 @@ use structype_derive::StrucType;
 
 #[derive(StrucType)]
 struct MyStruct {
-    #[structype_label = "Overridde name for string"]
+    #[structype_label("Overridde name for string", something="another")]
     _my_string: String,
     #[structype_label = "int_override"]
     _my_int64: i64,

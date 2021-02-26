@@ -106,7 +106,31 @@ pub fn structmap(input: TokenStream) -> TokenStream {
                                         }
                                         _ => panic!("Only string value is supported"),
                                     },
+                                    syn::Meta::List(metalist) => {
+                                        let val =metalist.nested
+                                        .into_pairs()
+                                        .map(|pair| pair.into_value())
+                                        .filter_map(|pair| match pair {
+                                            syn::NestedMeta::Meta(meta) => match meta {
+                                                syn::Meta::Path(path) => path.get_ident().cloned(),
+                                                _ => panic!("only path meta supported"),
+                                            },
+                                            //  => panic!("lit not supported"),
+                                            syn::NestedMeta::Lit(lit) => {
+                                                Some(lit)
+                                            }
+                                        })
+                                        .collect::<Vec<_>>();
+                                            // for i in val {
+                                            //     match i {
+                                            //         syn::Lit::Str(_) => {}
+                                            //         _ => panic!("Attributes in string -> value format"),
+                                            //     }
+                                            // }
+                                        }
+                                        
                                     _ => panic!("Path and List is not applicable"),
+                                    // syn::Meta::Path(_) => {}
                                 }
                             }
                         } else {
