@@ -1,6 +1,6 @@
 [package]
 name = "structype_derive"
-version = "1.0.0"
+version = "2.0.0"
 authors = ["nohupped_arch <nohupped@users.noreply.github.com>"]
 edition = "2018"
 repository = "https://github.com/nohupped/structype_derive"
@@ -16,7 +16,8 @@ syn = { version = "1.0.60", features = ["full"] }
 quote = "1.0.9"
 proc-macro2 = "1.0.24"
 serde_json = "1.0.62"
-serde = "1.0.123"
+# serde = {version = "1.0.123", features = ["derive"]}
+serde = {version = "1.0.123"}
 
 [dev-dependencies]
 trybuild = "1.0.41"

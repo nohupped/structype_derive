@@ -1,42 +1,41 @@
+use std::collections::HashMap;
 use structype_derive::StrucType;
-
 #[derive(StrucType)]
-struct MyStruct {
-    #[structype_label("Overridde name for string", something="another")]
-    _my_string: String,
-    #[structype_label = "int_override"]
-    _my_int64: i64,
-    _my_float: f64,
-    _my_enum: MyEnum,
-    _my_number: f64,
-    _my_nested_struct: MyAnotherStruct,
+// #[structype_meta("labelover_ride=name")] // This will panic the macro
+struct UserStruct {
+    #[structype_meta(override_name = "Primary ID", order = "1")]
+    _id: i64,
+    #[structype_meta(override_name = "name", order = "0")]
+    _username: String,
+    _org: String,
+    _details: Details,
 }
 
 #[derive(StrucType)]
-struct MyAnotherStruct {
-    _my_another_string: String,
+struct Details {
+    _user_attributes: HashMap<String, String>,
 }
 
 #[derive(StrucType)]
 enum MyEnum {
-    #[structype_label = "my_over-ridden-enum"]
+    // #[structype_label = "my_over-ridden-enum"]
     _VariantA,
     _VariantB,
 }
 
 #[derive(StrucType)]
 union MyUnion {
-    #[structype_label = "my_over-ridden-union"]
+    // #[structype_label = "my_over-ridden-union"]
     _unsigned: u32,
     _signed: i32,
 }
 
 fn main() {
-    MyStruct::print_fields();
-    let data = MyStruct::as_string();
+    UserStruct::print_fields();
+    let data = UserStruct::as_string();
     println!("{}", data);
-    MyAnotherStruct::print_fields();
-    let data = MyAnotherStruct::as_string();
+    Details::print_fields();
+    let data = Details::as_string();
     println!("{}", data);
 
     MyEnum::print_fields();
