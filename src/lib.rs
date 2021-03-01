@@ -39,53 +39,52 @@
 //!
 //! # Output:
 //! ```json
-//!  [
-//!      {
-//!          "id": {
-//!              "override_name": "Primary ID",
-//!              "order": "1"
-//!          }
-//!      },
-//!      {
-//!          "username": {
-//!              "override_name": "name",
-//!              "order": "0"
-//!          }
-//!      },
-//!      {
-//!          "org": {}
-//!      },
-//!      {
-//!          "details": {}
-//!      }
-//!  ]
+//! [
+//!     {
+//!         "field_name": "id",
+//!         "meta": {
+//!             "order": "1",
+//!             "override_name": "Primary ID"
+//!         }
+//!     },
+//!     {
+//!         "field_name": "username",
+//!         "meta": {
+//!             "override_name": "name",
+//!             "order": "0"
+//!         }
+//!     },
+//!     {
+//!         "field_name": "org",
+//!         "meta": {}
+//!     },
+//!     {
+//!         "field_name": "details",
+//!         "meta": {}
+//!     }
+//! ]
 //! ```
+//! 
+//! If this serialized string needs to be deserialized into a struct, use the same type used here
+//!
+//! cargo.toml:
+//! ```toml
+//! structype = "3.0.0"
+//! ```
+//! 
+//! your code:
+//! ```rust
+//! use structype::typeMapVec;
+//!```
+//!
+//!
+
 
 use proc_macro::{self, TokenStream};
+use structype::{TypeMap, TypeMapVec};
 use quote::quote;
 use std::collections::HashMap;
 use syn::{parse_macro_input, DataEnum, DataUnion, DeriveInput, FieldsNamed};
-use serde::ser::{Serialize, SerializeMap, Serializer};
-
-type StrucTypeMap = Vec<TypeMap>;
-
-#[derive(Debug, Clone)]
-struct TypeMap {
-    field_name: String,
-    meta: HashMap<String, String>,
-}
-
-impl Serialize for TypeMap {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut seq = serializer.serialize_map(Some(self.meta.len() + 1))?;
-        seq.serialize_entry(&self.field_name, &self.meta)?;
-
-        seq.end()
-    }
-}
 
 #[proc_macro_derive(StrucType, attributes(structype_meta))]
 pub fn structmap(input: TokenStream) -> TokenStream {
@@ -103,7 +102,7 @@ pub fn structmap(input: TokenStream) -> TokenStream {
         syn::Data::Struct(s) => {
             match &s.fields {
                 syn::Fields::Named(FieldsNamed { named, .. }) => {
-                    let mut structype_map: StrucTypeMap = Vec::new();
+                    let mut structype_map: TypeMapVec = Vec::new();
                     let iters = named.iter().map(|f| (&f.ident, &f.attrs));
                     for (if_ident, attrs) in iters {
                         if let Some(ident) = if_ident {
@@ -166,7 +165,7 @@ pub fn structmap(input: TokenStream) -> TokenStream {
         }
         // Enums parsing starts here
         syn::Data::Enum(DataEnum { variants, .. }) => {
-            let mut structype_map: StrucTypeMap = Vec::new();
+            let mut structype_map: TypeMapVec = Vec::new();
             let iters = variants.iter().map(|f| (&f.ident, &f.attrs));
             for (if_ident, attrs) in iters {
                 if attrs.len() > 0 {
@@ -232,7 +231,7 @@ pub fn structmap(input: TokenStream) -> TokenStream {
             fields: FieldsNamed { named, .. },
             ..
         }) => {
-            let mut structype_map: StrucTypeMap = Vec::new();
+            let mut structype_map: TypeMapVec = Vec::new();
             let iters = named.iter().map(|f| (&f.ident, &f.attrs));
             for (if_ident, attrs) in iters {
                 if let Some(ident) = if_ident {
