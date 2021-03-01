@@ -1,4 +1,4 @@
-# Crate structype_derive
+# structype_derive  [![Build Status](https://travis-ci.org/nohupped/structype_derive.svg?branch=master)](https://travis-ci.org/nohupped/structype_derive)
 
 This is a derive procedural macro that will let you add custom derive and attributes over structs, enums and unions. This derive will add two impl on the
 type. The `as_string()` method returns a json serialized string representation of the type with any meta information annotated with `structype_meta("key"=val)` attribute while the `print_fields()` method will print the same to STDOUT. This macro will panic at compile time if annotated over tuple and unit structs.
