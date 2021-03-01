@@ -5,7 +5,7 @@
 //! while the `print_fields()` method will print the same to STDOUT.
 //! This macro will panic at compile time if annotated over tuple and unit structs.
 //!
-//! # Example:
+//! ## Example:
 //! ```
 //! use structype_derive::StrucType;
 //! #[derive(StrucType)]
@@ -64,26 +64,40 @@
 //!     }
 //! ]
 //! ```
-//! 
+//!
 //! If this serialized string needs to be deserialized into a struct, use the same type used here
 //!
-//! cargo.toml:
+//! ## cargo.toml:
+//!
 //! ```toml
 //! structype = "3.0.0"
 //! ```
-//! 
-//! your code:
+//!
+//! ## Example:
+//!
 //! ```rust
-//! use structype::typeMapVec;
-//!```
+//! use structype::TypeMapVec;
+//! use structype_derive::StrucType;
 //!
+//! #[derive(StrucType)]
+//! struct UserStruct {
+//!     #[structype_meta(override_name="Primary ID", order="1")]
+//!     id: i64,
+//! }
 //!
-
+//! fn print_struct_fields() {
+//!     UserStruct::print_fields();
+//!     let data: TypeMapVec = serde_json::from_str(&UserStruct::as_string()).unwrap();
+//!     println!("Deserialized: {:?}", data);
+//! }
+//!
+//! ```
+//!
 
 use proc_macro::{self, TokenStream};
-use structype::{TypeMap, TypeMapVec};
 use quote::quote;
 use std::collections::HashMap;
+use structype::{TypeMap, TypeMapVec};
 use syn::{parse_macro_input, DataEnum, DataUnion, DeriveInput, FieldsNamed};
 
 #[proc_macro_derive(StrucType, attributes(structype_meta))]
@@ -106,7 +120,7 @@ pub fn structmap(input: TokenStream) -> TokenStream {
                     let iters = named.iter().map(|f| (&f.ident, &f.attrs));
                     for (if_ident, attrs) in iters {
                         if let Some(ident) = if_ident {
-                            if attrs.len() > 0 {
+                            if !attrs.is_empty() {
                                 let mut record = TypeMap {
                                     field_name: ident.to_string(),
                                     meta: HashMap::new(),
@@ -168,7 +182,7 @@ pub fn structmap(input: TokenStream) -> TokenStream {
             let mut structype_map: TypeMapVec = Vec::new();
             let iters = variants.iter().map(|f| (&f.ident, &f.attrs));
             for (if_ident, attrs) in iters {
-                if attrs.len() > 0 {
+                if !attrs.is_empty() {
                     let mut record = TypeMap {
                         field_name: if_ident.to_string(),
                         meta: HashMap::new(),
@@ -235,7 +249,7 @@ pub fn structmap(input: TokenStream) -> TokenStream {
             let iters = named.iter().map(|f| (&f.ident, &f.attrs));
             for (if_ident, attrs) in iters {
                 if let Some(ident) = if_ident {
-                    if attrs.len() > 0 {
+                    if !attrs.is_empty() {
                         let mut record = TypeMap {
                             field_name: ident.to_string(),
                             meta: HashMap::new(),
@@ -249,12 +263,12 @@ pub fn structmap(input: TokenStream) -> TokenStream {
                                     for pair in pairs {
                                         match pair {
                                             syn::NestedMeta::Meta(meta) => match meta {
-                                                syn::Meta::Path(_) => {
-                                                    panic!(r#"invalid. Use the format structype_meta(label="foo", ord="10")"#)
-                                                }
-                                                syn::Meta::List(_) => {
-                                                    panic!(r#"invalid. Use the format structype_meta(label="foo", ord="10")"#)
-                                                }
+                                                syn::Meta::Path(_) => panic!(
+                                                    r#"invalid. Use the format structype_meta(label="foo", ord="10")"#
+                                                ),
+                                                syn::Meta::List(_) => panic!(
+                                                    r#"invalid. Use the format structype_meta(label="foo", ord="10")"#
+                                                ),
                                                 syn::Meta::NameValue(meta_nameval) => {
                                                     let path = meta_nameval.path;
                                                     match meta_nameval.lit {
